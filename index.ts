@@ -1,12 +1,13 @@
+import {IDao} from "./dao/IDao";
 var serverless = require('serverless-http');
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as AWSXRay from 'aws-xray-sdk';
-import * as AWS from 'aws-sdk';
 import {XSSController} from './controllers/XSSController';
 import {CreateController_UsersPost} from './controllers/CreateController_UsersPost'
 import {CreateController_ApplicantsPost} from './controllers/CreateController_ApplicantsPost'
-
+import {DaoFactory} from './dao/DaoFactory';
+import {Context} from './core/Context';
 
 const app = express();
 
@@ -14,11 +15,24 @@ const app = express();
 app.use(bodyParser.json());
 
 // init XRay middleware, all controllers, DAOs, etc will append sub-segments
-app.use(AWSXRay.express.openSegment('Auto Complete API'));
+app.use(AWSXRay.express.openSegment('Auth API'));
 
 // IMPORTANT: all routes that do not require JWT authentication must be declared ahead of registering the middleware with app.use
 app.get('/', function (req, res) {
-    res.status(200).send('Hello World! I am the Placeholder Complete API ' +  process.env.API_VERSION);
+    res.status(200).send('Hello World! I am the Auth API ' +  process.env.API_VERSION);
+});
+
+// init dao factory
+const factory = new DaoFactory();
+// initialize mongo connection
+// we are putting the await Context.MONGO_DAO.connect() inside this middleware
+// to pause execution while mongo connects
+app.use(async function(req, res, next) {
+    if (!Context.DAO) {
+        Context.DAO = factory.getDAO('mysql') as IDao;
+        await Context.DAO.connect();
+    }
+    next();
 });
 
 // IMPORTANT: API Gateway & Lambda can not be used as a web server to serve static content!!!
@@ -56,6 +70,8 @@ app.use(AWSXRay.express.closeSegment());
 const wrapper = serverless(app, {callbackWaitsForEmptyEventLoop: false});
 
 const handler = async (event, context, callback) => {
+    // This enables Lambda function to complete
+    context.callbackWaitsForEmptyEventLoop = false;
     return new Promise(async (resolve, reject) => {
         try{
             /** Immediate response for WarmUP plugin */

@@ -65,4 +65,8 @@ export class TypeOrmDao implements IDao {
     get connected():boolean {
         return this._connection === null;
     }
+
+    // TODO: code out persistence methods for user object
+    // abstracting these operations into a DAO allows us to cleanly move away from type ORM
+    // if I have time I will demonstrate this be creating a new dao and adding a new code to the factory
 }

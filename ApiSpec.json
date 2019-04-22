@@ -1,0 +1,253 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Serverless Authentication Sample",
+    "description": "Sample serverless API that performs username and password authentication",
+    "contact": {},
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://your-prod-domain/v1",
+      "variables": {}
+    },
+    {
+      "url": "https://your-test-domain/v1",
+      "variables": {}
+    },
+    {
+      "url": "https://your-dev-domain/v1",
+      "variables": {}
+    }
+  ],
+  "paths": {
+    "/users/sessions": {
+      "post": {
+        "summary": "Login user by hashing the supplied password.",
+        "description": "Accepts an incoming login payload.",
+        "operationId": "UsersPost",
+        "parameters": [],
+        "requestBody": {
+          "description": "The json object representing the login payload.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Users_Session_POST_Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "A JSON object",
+            "headers": {},
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users_Session_POST_Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parameters are invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error_Response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Could not authenticate request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error_Response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error_Response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "summary": "Route to sign up new users",
+        "description": "Accepts an incoming sing up message.",
+        "operationId": "ApplicantsPost",
+        "parameters": [],
+        "requestBody": {
+          "description": "The json object representing the sign up payload.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Users_POST_Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "A JSON object",
+            "headers": {},
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users_POST_Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parameters are invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error_Response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Could not authenticate request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error_Response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error_Response"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "title": "User",
+        "required": [
+          "username",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "The users first name."
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The users last name."
+          },
+          "email": {
+            "type": "string",
+            "description": "the users email."
+          },
+          "id": {
+            "type": "string",
+            "description": "the system id of the user."
+          },
+          "username": {
+            "type": "string",
+            "description": "The user's username."
+          },
+          "password": {
+            "type": "string",
+            "description": "The user's password."
+          }
+        },
+        "description": "The user object."
+      },
+      "Users_Session_POST_Payload": {
+        "title": "Users_Session_POST_Payload",
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "description": "A serialized user object."
+          }
+        }
+      },
+      "Users_Session_POST_Response": {
+        "title": "Users_Session_POST_Response",
+        "type": "object",
+        "description": "An object containing the session JWT.",
+        "properties": {
+          "result": {
+            "type": "object",
+            "properties": {
+              "jwt": {
+                "type": "string",
+                "description": "A valid JWT issues for the session."
+              }
+            }
+          }
+        },
+        "example": {
+          "result": {
+            "jwt": "a valid jwt"
+          }
+        }
+      },
+      "Users_POST_Payload": {
+        "title": "Users_POST_Payload",
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "description": "A serialized user."
+          }
+        }
+      },
+      "Users_POST_Response": {
+        "title": "Users_POST_Response",
+        "description": "A serialized user object containing the id of the newly created user.",
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "object",
+            "description": "An object containing the userId of the newly created user."
+          }
+        }
+      },
+      "Error_Response": {
+        "title": "Error_Response",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "error": "Payload is invalid"
+        }
+      }
+    }
+  },
+  "tags": []
+}

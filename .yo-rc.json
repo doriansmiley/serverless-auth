@@ -1,0 +1,8 @@
+{
+  "generator-serverless-api": {
+    "promptValues": {
+      "apiSpec": "y",
+      "apiSpecFile": "/Users/dsmiley/workspace/serverless-auth/ApiSpec.json"
+    }
+  }
+}

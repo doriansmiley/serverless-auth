@@ -30,12 +30,13 @@ describe('Testing service routes', function() {
             method: 'POST',
             host: process.env.TEST_API_GATEWAY_HOST,
             port: process.env.TEST_API_GATEWAY_PORT,
+            protocol: process.env.TEST_API_PROTOCOL,
             path: (process.env.TEST_API_GATEWAY_PORT == 443) ? '/dev/v1/users/sessions' : '/v1/users/sessions',
             headers: {
                 'Content-Type' : 'application/json'
             }
         };
-        console.log('###################################### ' + options.path)
+
         const httpLib = (options.protocol === 'https:') ? https : http;
 
         const req = httpLib.request(options, function (res) {
@@ -48,6 +49,7 @@ describe('Testing service routes', function() {
             res.on('end', function () {
                 let result = Buffer.concat(data);
                 console.log('Response headers: ' + JSON.stringify(res.headers));
+                console.log('Request headers: ' + JSON.stringify(req.headers));
                 console.log('res.req.headers: ' + res.req.headers);
                 console.log('Response code: ' + res.statusCode);
                 console.log('options.host: ' + options.host);

@@ -9,7 +9,7 @@
 [[ -z "${SUBNET_A}" ]] && export SUBNET_A=subnet-9999a
 [[ -z "${SUBNET_B}" ]] && export SUBNET_B=subnet-9999b
 
-if [ $TEST_API_GATEWAY_PORT == 80 ]
+if [ $TEST_API_GATEWAY_PORT != 443 ]
 then
 # start the API using serverless
 nohup serverless offline start --stage local \

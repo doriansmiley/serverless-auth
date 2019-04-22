@@ -30,6 +30,7 @@ describe('Testing service routes', function() {
             method: 'POST',
             host: process.env.TEST_API_GATEWAY_HOST,
             port: process.env.TEST_API_GATEWAY_PORT,
+            protocol: process.env.TEST_API_PROTOCOL,
             path: (process.env.TEST_API_GATEWAY_PORT == 443) ? '/dev/v1/users' : '/v1/users',
             headers: {
                 'Content-Type' : 'application/json'

@@ -8,6 +8,11 @@
 [[ -z "${SECURITY_GROUP}" ]] && export SECURITY_GROUP=demo-9999
 [[ -z "${SUBNET_A}" ]] && export SUBNET_A=subnet-9999a
 [[ -z "${SUBNET_B}" ]] && export SUBNET_B=subnet-9999b
+[[ -z "${DB_HOST}" ]] && export DB_HOST=localhost
+[[ -z "${DB_PORT}" ]] && export DB_PORT=3306
+[[ -z "${DB_NAME}" ]] && export DB_NAME=test
+[[ -z "${DB_USER}" ]] && export DB_USER=root
+[[ -z "${DB_TYPE}" ]] && export DB_TYPE=mysql
 
 if [ $TEST_API_GATEWAY_PORT != 443 ]
 then

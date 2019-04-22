@@ -89,6 +89,13 @@ serverless deploy -v --stage $STAGE \
     --DbUser $DB_USER \
     —-DbPwd $DB_PWD
 ```
+Serverless will deploy the following:
+* API Gateway setup
+* Lambda Function triggered by API Gateway
+* IAM roles and permissions
+* Cloudwatch Alarms
+* VPS with two public subnets and two private subnets with nat gateways
+* RDS instance using mysql
 
 ### Tear Down
 

@@ -24,9 +24,7 @@ app.get('/', function (req, res) {
 
 // init dao factory
 const factory = new DaoFactory();
-// initialize mongo connection
-// we are putting the await Context.MONGO_DAO.connect() inside this middleware
-// to pause execution while mongo connects
+// initialize database connection
 app.use(async function(req, res, next) {
     if (!Context.DAO) {
         Context.DAO = factory.getDAO('mysql') as IDao;

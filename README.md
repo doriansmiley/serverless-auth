@@ -94,7 +94,7 @@ Serverless will deploy the following:
 * Lambda Function triggered by API Gateway
 * IAM roles and permissions
 * Cloudwatch Alarms
-* VPS with two public subnets and two private subnets with nat gateways
+* VPS with two public subnets and two private subnets with nat gateway
 * RDS instance using mysql
 
 ### Tear Down

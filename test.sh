@@ -20,8 +20,6 @@ then
 nohup serverless offline start --stage local \
           --host $TEST_API_GATEWAY_HOST \
           --port $TEST_API_GATEWAY_PORT \
-          --mongo-host $MONGO_HOST \
-          --mongo-db-name $MONGO_DB_NAME \
           --alert-email $ALERT_EMAIL & echo $!
 # store the process ID
 serverless_pid=$!

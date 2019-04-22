@@ -8,23 +8,10 @@ TODO: add badges
 -->
 
 ## Dependencies
-#### TODO: Add your dependencies
-```
 
-```
+Make sure node is installed.
 
-## Setup
-
-You will need yarn to manage packages
-```bash
-npm install yarn -g
-```
-
-```bash
-yarn install
-```
-
-Global npm packages are optional but recommended
+Global npm packages are required
 
 ```bash
 npm install grunt serverless -g
@@ -37,36 +24,34 @@ npm install grunt serverless -g
 The following environment variables are required by the functions.
 
 ```bash
-# Testing
-export JWT_SECRET=anything
-export ALERT_EMAIL=<email>
+# Local Testing
 export TEST_API_GATEWAY_HOST=localhost
 export TEST_API_GATEWAY_PORT=3000
-export STAGE=local
-export AWS_XRAY_CONTEXT_MISSING=LOG_ERROR
+export TEST_API_PROTOCOL=http:
+export DB_HOST=localhost,
+export DB_PORT=3306,
+export DB_NAME=test,
+export DB_USER=<username>,
+export DB_PWD=<password>,
+export DB_TYPE=mysql
 
-# Dev Integration Testing
-export MFOUR_API_ENDPOINT_DEV=https://<yourApiName>.api.dev.mfour.com
-export MFOUR_API_AUTH_ENDPOINT_DEV=https://auth.api.dev.mfour.com
-export MFOUR_API_PRIVATE_KEY_DEV=privateKey
-export MFOUR_API_PUBLIC_KEY_DEV=publicKey
-export AWS_ACCESS_KEY_ID=accesskeyid
-export AWS_SECRET_ACCESS_KEY=secretaccesskey
-
-# Test Integration Testing
-export MFOUR_API_ENDPOINT_DEV=https://<yourApiName>.api.test.mfour.com
-export MFOUR_API_AUTH_ENDPOINT_TEST=https://auth.api.test.mfour.com
-export MFOUR_API_PRIVATE_KEY_TEST=privateKey
-export MFOUR_API_PUBLIC_KEY_TEST=publicKey
-export AWS_ACCESS_KEY_ID=accesskeyid
-export AWS_SECRET_ACCESS_KEY=secretaccesskey
+# AWS Integration Testing
+export TEST_API_GATEWAY_HOST=<output endpoint>
+export TEST_API_GATEWAY_PORT=443
+export TEST_API_PROTOCOL=https:
+export DB_HOST=10.0.0.0
+export DB_PORT=3306,
+export DB_NAME=test,
+export DB_USER=<username>,
+export DB_PWD=<password>,
+export DB_TYPE=mysql
 ```
 
 ## Building
 
 You will need to build the app when making changes and before testing.
 ```bash
-yarn run build
+npm run build
 ```
 
 ## Testing
@@ -80,16 +65,6 @@ To run all tests (not environment specific integrations) you can simply run this
 yarn run test
 ```
 
-To run integration tests on the dev environment:
-```bash
-yarn run test-dev
-```
-
-To run integration tests on the test environment:
-```bash
-yarn run test-test
-```
-
 ### Offline Testing
 
 Serverless can emulate a webserver and allow you to hit the gateway function using curl or Postman
@@ -99,8 +74,7 @@ Serverless can emulate a webserver and allow you to hit the gateway function usi
 serverless offline start --stage local \
     --host $TEST_API_GATEWAY_HOST \
     --port $TEST_API_GATEWAY_PORT \
-    --alert-email $ALERT_EMAIL \
-    --jwt-secret $JWT_SECRET
+    --alert-email $ALERT_EMAIL
 ```
 
 Your service will be accessible on `localhost:3000`.
@@ -110,37 +84,11 @@ Your service will be accessible on `localhost:3000`.
 We deploy to AWS using serverless directly. You will need the AWS Credentials setup on your machine. Check with DevOps if you need help with this
 
 ```bash
-serverless deploy -v \
-    --profile <profile> \
-    --stage development \
-    --alert-email "<email>" \
-    --jwt-secret "<jwtsecret>" \
-    --max-suggestion-file-size 50000 \
-    --vpc-security-group <vpcsecuritygroup> \
-    --vpc-subnet-a <vpcsubneta> \
-    --vpc-subnet-b <vpcsubnetb>
+serverless deploy -v --stage $STAGE \
+    --alert-email $ALERT_EMAIL \
+    --DbUser $DB_USER \
+    —-DbPwd $DB_PWD
 ```
-
-Serverless will deploy the following:
-* API Gateway setup
-* Lambda Function triggered by API Gateway
-* IAM roles and permissions
-* Cloudwatch Alarms
-
-Please note, not all alarms are setup automatically. The following alarms need to be added manually or through CloudFormation:
-* 400 errors on API gateway
-    * metric: 4xxError
-    * rule: >= 5 errors in 5 minutes
-    * statistic: Sum
-* 500 errors on API gateway
-    * metric: 5xxError
-    * rule: >= 5 errors in 5 minutes
-    * statistic: Sum
-
-For staging, you can set the following variables:
-
-* AWS Profile: `serverless`
-* Pilgrim Secret: obtain from team members or DevOps
 
 ### Tear Down
 

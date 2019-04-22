@@ -423,8 +423,8 @@ resources:
             Engine: mysql
             EngineVersion: "5.7.21"
             EngineMode: "serverless"
-            MasterUsername: ${opt:DbUser, "root"}
-            MasterUserPassword: ${opt:DbUser, "sks2342jjz"}
+            MasterUsername: ${opt:DbUser, "root"} # TODO: remove default user
+            MasterUserPassword: ${opt:DbPwd, "sks2342jjz"} # TODO: remove default PWD
             DBSubnetGroupName: !Ref DBSubnetGroup
             VPCSecurityGroups:
               - Ref: DatabaseVpcSecurityGroup

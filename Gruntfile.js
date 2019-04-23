@@ -2,8 +2,30 @@ module.exports = function(grunt) {
 
     // Add the grunt-mocha-test tasks.
     grunt.loadNpmTasks('grunt-mocha-test');
+    grunt.loadNpmTasks("grunt-tslint");
 
     grunt.initConfig({
+        // configure linter
+        tslint: {
+            options: {
+                // can be a configuration object or a filepath to tslint.json
+                configuration: "tslint.json",
+                // If set to true, tslint errors will be reported, but not fail the task
+                // If set to false, tslint errors will be reported, and the task will fail
+                force: true,
+                fix: false
+            },
+            files: {
+                src: [
+                    "controllers/**/*.ts",
+                    "core/**/*.ts",
+                    "dao/**/*.ts",
+                    "error/**/*.ts",
+                    "model/**/*.ts",
+                    "util/**/*.ts",
+                ]
+            }
+        },
         // Configure a mochaTest task
         mochaTest: {
             test: {

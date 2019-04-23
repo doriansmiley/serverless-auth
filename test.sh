@@ -35,7 +35,7 @@ while ! echo exit | nc $TEST_API_GATEWAY_HOST $TEST_API_GATEWAY_PORT; do sleep 5
 trap "kill $serverless_pid" EXIT
 fi
 # run tests
-grunt --dbug --stack mochaTest:test
+grunt --dbug --stack tslint mochaTest:test
 MOCHA_RESULT=$?
 
 # wait for data to be written to the stream

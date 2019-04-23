@@ -14,20 +14,15 @@ export class XSSController extends AbstractController {
     }
 
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
-        // log request recieved
-        this.log(LogLevels.INFO, 'XSSController Request recieved', null, req);
-
-        return new Promise<any>((resolve, reject) => {
-            try {
-                const xss = new FilterXSS(this.xssConfig);
-                req.body = (req.body) ? JSON.parse(xss.process(JSON.stringify(req.body))) : req.body;
-                return this.resolvePromise(req.body, resolve, reject, null, null);
-            } catch (e) {
-                const error: ServiceError = new ServiceError('Payload is invalid', 400);
-                this.log(LogLevels.ERROR, error.message, null, req, e);
-                return this.resolvePromise(null, resolve, reject, error, null);
-            }
-        });
+        try {
+            // log request recieved
+            this.log(LogLevels.INFO, 'XSSController Request recieved', null, req);
+            const xss = new FilterXSS(this.xssConfig);
+            req.body = (req.body) ? JSON.parse(xss.process(JSON.stringify(req.body))) : req.body;
+            return req.body;
+        } catch (e) {
+            throw this.resolveServiceError(e);
+        }
     }
 
     // override and call next to proceed with request

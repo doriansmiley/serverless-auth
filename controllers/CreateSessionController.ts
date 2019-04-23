@@ -7,21 +7,21 @@ import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
 // IMPORTANT: this forces the driver to be included, without it it's dropped during tree shacking with dev dependency plugin
 const mysql = require('mysql');
-import {Controller} from './Controller';
+import {AbstractController} from './AbstractController';
 import {User} from '../model/entity/User';
 import {Context} from '../core/Context';
 import {PwdUtils} from '../util/PwdUtils';
 
-export class CreateSessionController extends Controller {
+export class CreateSessionController extends AbstractController {
 
     constructor() {
         super();
     }
 
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
-        // log request received
-        this.log(LogLevels.INFO, 'CreateSessionController Request received', null, req);
         try {
+            // log request received
+            this.log(LogLevels.INFO, 'CreateSessionController Request received', null, req);
             // first validate the incoming request
             const error: ServiceError = this.checkValidation(req);
             if (error !== null ) {
@@ -39,11 +39,7 @@ export class CreateSessionController extends Controller {
 
         } catch (e) {
             this.log(LogLevels.ERROR, e.message, null, req, e);
-            if (e instanceof ServiceError) {
-                // rethrow error, this allows us to return 4xx or 5xx based on the error
-                throw e;
-            }
-            throw new ServiceError(e.message, 500);
+            throw this.resolveServiceError(e);
         }
     }
 

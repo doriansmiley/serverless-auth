@@ -5,20 +5,20 @@ import {IContext} from '../core/IContext';
 import {Context} from '../core/Context';
 import {string, object, number, validate, ValidationOptions, ValidationResult as JoiValidationResult} from 'joi';
 import * as express from 'express';
-import {Controller} from './Controller';
+import {AbstractController} from './AbstractController';
 import {User} from '../model/entity/User';
 import {PwdUtils} from '../util/PwdUtils';
 
-export class CreateUserController extends Controller {
+export class CreateUserController extends AbstractController {
 
     constructor() {
         super();
     }
 
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
-        // log request received
-        this.log(LogLevels.INFO, 'CreateUserController Request received', null, req);
         try {
+            // log request received
+            this.log(LogLevels.INFO, 'CreateUserController Request received', null, req);
             // first validate the incoming request
             const error: ServiceError = this.checkValidation(req);
             if (error !== null) {
@@ -34,12 +34,7 @@ export class CreateUserController extends Controller {
                 user: user
             };
         } catch (e) {
-            this.log(LogLevels.ERROR, e.message, null, req, e);
-            if (e instanceof ServiceError) {
-                // rethrow error, this allows us to return 4xx or 5xx based on the error
-                throw e;
-            }
-            throw new ServiceError(e.message, 500);
+            throw this.resolveServiceError(e);
         }
     }
 

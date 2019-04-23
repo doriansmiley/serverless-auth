@@ -4,7 +4,9 @@ import * as AWSXRay from 'aws-xray-sdk';
 import {validate, ValidationOptions, ValidationResult as JoiValidationResult} from 'joi';
 import {ServiceError} from '../error/ServiceError';
 import {UuidUtils} from '../util/UuidUtils';
-import {PromiseResolver} from '../util/PromiseResolver';
+import {Config} from '../core/Config';
+import {Context} from '../core/Context';
+import {IConfig} from '../core/IConfig';
 
 export enum LogLevels {
     LOG = 'LOG',
@@ -13,26 +15,48 @@ export enum LogLevels {
     ERROR = 'ERROR'
 }
 
-export abstract class AbstractController extends PromiseResolver implements IController {
+export abstract class AbstractController implements IController {
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
-        return new Promise<object>((resolve, reject) => {
-            try {
-                // first validate the incoming request.
-                const vResult = this.validate(req);
-                if (vResult.error !== null) {
-                    this.log(LogLevels.ERROR, vResult.error.message, null, req, vResult.error);
-                    return this.resolvePromise(null, resolve, reject, new Error(vResult.error.message), null);
-                }
+        // first validate the incoming request.
+        const vResult = this.validate(req);
+        if (vResult.error !== null) {
+            this.log(LogLevels.ERROR, vResult.error.message, null, req, vResult.error);
+            throw new ServiceError(vResult.error.message, 400);
+        }
+    }
 
-                // stub for override
-                // in your sub classes you should supply value for result and error
-                this.resolvePromise(null, resolve, reject, null, null);
-            } catch (e) {
-                // log error response
-                this.log(LogLevels.ERROR, e.message, null, req, e);
-                return this.resolvePromise(null, resolve, reject, e, null);
-            }
-        });
+    protected checkValidation(req: express.Request): ServiceError {
+        // first validate the incoming request
+        const vResult = this.validate(req);
+        if (vResult.error !== null) {
+            const error = new ServiceError(vResult.error.message, 400);
+            this.log(LogLevels.ERROR, vResult.error.message, null, req, error);
+            return error;
+        }
+        return null;
+    }
+
+    protected createContext(): Context {
+        // create context
+        const config: IConfig = new Config();
+        return new Context(config);
+    }
+
+    protected generateTermGUID(): string {
+        return UuidUtils.generateUUID();
+    }
+
+    public resolveServiceError(e: Error): ServiceError {
+
+        let errorCode = 500;
+
+        if (e instanceof ServiceError) {
+            errorCode = e.status;
+        } else {
+            errorCode = 500;
+        }
+
+        return new ServiceError(e.message, errorCode);
     }
 
     // stub for override

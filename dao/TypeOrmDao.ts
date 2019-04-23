@@ -127,7 +127,7 @@ export class TypeOrmDao implements IDao {
     async createUser(user: User): Promise<User> {
         // check if any other user has the same email
         try {
-            const existingUser: User = await this._userRepository.findOne({email: user.email});
+            const existingUser: User = await this._userRepository.findOne({username: user.username});
             if (existingUser) {
                 // DO not log emails or user ID values to logs! This is a security no no
                 this.log(LogLevels.WARN, 'User already exists');

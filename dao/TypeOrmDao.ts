@@ -148,7 +148,7 @@ export class TypeOrmDao implements IDao {
 
     async readUser(user: User): Promise<User> {
         try {
-            user = await this._userRepository.findOne({email: user.email});
+            user = await this._userRepository.findOne({username: user.username});
             if (!user) {
                 // DO not log emails or user ID values to logs! This is a security no no
                 this.log(LogLevels.WARN, 'User does not exists');

@@ -1,5 +1,23 @@
 # Serverless Authentication Sample - 1.0
-Sample serverless API that performs username and password authentication
+Sample serverless API that performs username and password authentication. Passwords are hashed and salted using node's built in crypto lib.
+The serverless config will deploy the entire stack including subnets, gateways, and rds. For API documentation refer to the ApiSpec.json file.
+You can use https://editor.swagger.io/ to view the file.
+
+During development I did discover two things regarding TypeORM:
+* https://github.com/typeorm/typeorm/issues/3427 - It appears that TypeORM needs some special connection handling in Lambda.
+This was a real pain to track down and it's not top line in their documentation. I also added a comment in the code. Better documentation on connection handling would have saved me several hours here.
+* TypeORM seems to fail silently when data type overflows column definition. Try the following cURL request a few times in a row:
+```bash
+curl --header "Content-Type: application/json" \
+    --request POST \
+    --data '{"user":{"firstName": "Dorian", "lastName": "Smiley", "email": "doriansmiley@somehwere.com", "username": "testUser_007867352595040011", "password": "password"}}' \
+    https://umen1vjrng.execute-api.us-west-2.amazonaws.com:443/dev/v1/users
+```
+The user appears to be added despite having the same username. The username is 27 characters but the limit is 26.
+Now remove any character from the username and repeat the test. Attempts to add the user multiple times now fail.
+This will result in a failure of the `find` method ` to return a matching user.
+Subsequent calls appear to keep adding users with the same useranme despite the verification check. I did not try to implement a unique constraint on the column.
+As far as I can tell the find method is failing silently and not adding the user.
 
 <!-- 
 TODO: add badges
@@ -49,20 +67,49 @@ export DB_TYPE=mysql
 
 ## Building
 
-You will need to build the app when making changes and before testing.
+To build the app run. Note the test command will run this for you.
 ```bash
 npm run build
 ```
 
 ## Testing
 
-### Unit Tests
-
 Make sure you have the environment variables setup from the previous step.
 
-To run all tests (not environment specific integrations) you can simply run this command:
+To run all tests locally
 ```bash
-yarn run test
+export TEST_API_GATEWAY_HOST=localhost
+export TEST_API_GATEWAY_PORT=3000
+export TEST_API_PROTOCOL=http:
+
+export DB_HOST=localhost
+export DB_PORT=3306
+export DB_NAME=test
+export DB_USER=<username>
+export DB_PWD=<password>
+export DB_TYPE=mysql
+export ALERT_EMAIL=<email>
+export STAGE=local
+
+npm test
+```
+To run integration tests after deployment
+```bash
+export TEST_API_GATEWAY_HOST=<service endpoint, for example umen1vjrng.execute-api.us-west-2.amazonaws.com>
+export TEST_API_GATEWAY_PORT=443
+export TEST_API_PROTOCOL=https:
+# we unset DB_HOST and DB_PORT because the ENV vars are preffered in environment config
+# we want to use stack ouputs
+unset DB_HOST
+unset DB_PORT
+export DB_NAME=test
+export DB_USER=<username>
+export DB_PWD=<password>
+export DB_TYPE=mysql
+export ALERT_EMAIL=<email>
+export STAGE=dev
+
+npm test
 ```
 
 ### Offline Testing
@@ -71,19 +118,26 @@ Serverless can emulate a webserver and allow you to hit the gateway function usi
 
 
 ```bash
-serverless offline start --stage local \
     --host $TEST_API_GATEWAY_HOST \
-    --port $TEST_API_GATEWAY_PORT \
-    --alert-email $ALERT_EMAIL
+          --port $TEST_API_GATEWAY_PORT \
+          --DbHost $DB_HOST \
+          --DbPort $DB_PORT \
+          --DbUser $DB_USER \
+          --DbPwd $DB_PWD \
+          --alert-email $ALERT_EMAIL
 ```
 
 Your service will be accessible on `localhost:3000`.
 
 ## Deployment
 
-We deploy to AWS using serverless directly. You will need the AWS Credentials setup on your machine. Check with DevOps if you need help with this
+We deploy to AWS using serverless directly. You will need the AWS Credentials setup on your machine with the appropriate permissions.
 
 ```bash
+# we unset DB_HOST and DB_PORT because the ENV vars are preffered in environment config
+# we want to use stack ouputs
+unset DB_HOST
+unset DB_PORT
 serverless deploy -v --force --stage $STAGE \
     --alert-email $ALERT_EMAIL \
     --DbUser $DB_USER \
@@ -106,7 +160,3 @@ While at the root of the serverless application, run:
 ```bash
 serverless remove --stage <stage_name>
 ```
-
-Before removing the stack with serverless, you have to ensure that all S3 buckets in the stack are emptied.
-
-This will include the main bucket serverless uses to upload the labmda function bundle in addition to any custom buckets you add in cloud formation.

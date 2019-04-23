@@ -24,7 +24,11 @@ TODO: add badges
 # <a href="https://circleci.com/gh/MFourMobile/mfour-auto-complete-service">
 # <img src="https://circleci.com/gh/MFourMobile/mfour-auto-complete-service.svg?style=shield&circle-token=6ade52254f840a128823978162dd02efdde393f6" alt="Build Status"></a>
 -->
-
+## Use of http-serverless
+Some developers ask why the use of http-serverless which wraps express APIs. Using http-serverless makes the API more portable.
+You can deploy the API as either a docker container or serverless application using API Gateway and Lambda.
+The downside however are somewhat bloated lambda function functions. I prefer this approach though
+as it can give you more deployment options.
 ## Dependencies
 
 Make sure node is installed.

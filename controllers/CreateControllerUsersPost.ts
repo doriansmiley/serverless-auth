@@ -2,7 +2,7 @@ import {ServiceError} from '../error/ServiceError';
 import {SecurityException} from '../error/SecurityException';
 import {LogLevels} from './AbstractController';
 import {IContext} from '../core/IContext';
-import { validate, ValidationOptions, ValidationResult as JoiValidationResult } from 'joi';
+import {object, string, validate, ValidationOptions, ValidationResult as JoiValidationResult} from 'joi';
 import * as express from 'express';
 import {Controller} from './Controller';
 import {User} from '../model/entity/User';
@@ -29,25 +29,25 @@ export class CreateControllerUsersPost extends Controller {
             let json: any = null;
 
             try {
-
-                // create context
-                const context: IContext = this.createContext();
-                const incomingUser: User = Object.assign(new User(), req.body.user)
+                const incomingUser: User = Object.assign(new User(), req.body.user);
                 const user: User = await Context.DAO.readUser(Object.assign(new User(), req.body.user));
                 const match = await bcrypt.compare(incomingUser.password, user.password);
+                if (!match) {
+                    throw new ServiceError('Username or password does not match', 400);
+                }
+                // TODO: constrcut JWT and return
                 json = {
-                    tmp: 'someValue'
+                    user: user
                 };
 
             } catch (e) {
                 this.log(LogLevels.ERROR, e.message, null, req, e);
-
+                if (e instanceof ServiceError) {
+                    // rethrow error, this allows us to return 4xx or 5xx based on the error
+                    throw e;
+                }
                 return this.resolvePromise(null, resolve, reject, this.resolveServiceError(e), null);
             }
-
-            // set response headers, if you do not want cors enabled remove these headers and update the serverless.yml removing cors blocks
-            res.set('Access-Control-Allow-Origin', '*');
-            res.set('Access-Control-Allow-Credentials', true);
 
             return this.resolvePromise(json, resolve, reject, null, null);
         });
@@ -64,8 +64,10 @@ export class CreateControllerUsersPost extends Controller {
         // you can also override the AbstractController.getOptions which returns the schema options
         // for more information see joi validation and schema options
         return {
-            // id: string().required(),
-            // someValue: string().required()
+            user: object({
+                username: string().required(),
+                password: string().required()
+            }).required()
         };
     }
 }

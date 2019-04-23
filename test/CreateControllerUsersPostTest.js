@@ -14,11 +14,70 @@ describe('Testing service routes', function() {
 
     const jsonArtifact = JSON.stringify(tmpValues);
 
-    it('should POST to /v1/users/sessions and return success response 200', function(done) {
+    it('should POST to /v1/users/sessions and return 400 bad request response', function(done) {
         const clientId = '1111';
         const postData = {
             clientId: clientId,
             tmpValues: jsonArtifact
+        };
+
+        const token = jwt.sign({ clientId: clientId }, process.env.JWT_SECRET, { algorithm: 'HS256'});
+
+        const options = {
+            method: 'POST',
+            host: process.env.TEST_API_GATEWAY_HOST,
+            port: process.env.TEST_API_GATEWAY_PORT,
+            protocol: process.env.TEST_API_PROTOCOL,
+            path: (process.env.TEST_API_GATEWAY_PORT == 443) ? '/dev/v1/users/sessions' : '/v1/users/sessions',
+            headers: {
+                'Content-Type' : 'application/json'
+            }
+        };
+
+        const httpLib = (options.protocol === 'https:') ? https : http;
+
+        const req = httpLib.request(options, function (res) {
+            let data = [];
+
+            res.on('data', function (chunk) {
+                data.push(chunk);
+            });
+
+            res.on('end', function () {
+                let result = Buffer.concat(data);
+                console.log('Response headers: ' + JSON.stringify(res.headers));
+                console.log('Request headers: ' + JSON.stringify(req.headers));
+                console.log('res.req.headers: ' + res.req.headers);
+                console.log('Response code: ' + res.statusCode);
+                console.log('options.host: ' + options.host);
+                console.log('options.port: ' + options.port);
+                console.log('options.path: ' + options.path);
+                console.log('Response: ' + result.toString());
+
+                // assert 200 response
+                assert.equal(400, res.statusCode);
+
+                done();
+            });
+            res.on('error', function (err) {
+                console.log("error", err);
+                done(err);
+            });
+        });
+        req.on('error', function (err) {
+            console.log("error", err);
+            done(err);
+        });
+        req.write(JSON.stringify(postData));
+        req.end();
+    }).timeout(10000);
+    it('should POST to /v1/users/sessions and return success response 200', function(done) {
+        const clientId = '1111';
+        const postData = {
+            user: {
+                username: 'dsmiley',
+                password: 'password'
+            }
         };
 
         const token = jwt.sign({ clientId: clientId }, process.env.JWT_SECRET, { algorithm: 'HS256'});
@@ -60,7 +119,6 @@ describe('Testing service routes', function() {
                 // parse result data
                 let parsedResult = JSON.parse(result.toString());
                 // TODO: add assertions when API is done
-                expect(parsedResult).to.deep.equal({tmp: "someValue"});
 
                 done();
             });

@@ -29,8 +29,9 @@ export class CreateControllerApplicantsPost extends Controller {
             let json: object = null;
 
             try {
-                const user: User = await Context.DAO.createUser(Object.assign(new User(), req.body.user));
-                user.password = await bcrypt.hash(user.password, 10); // this could be done cleaner but I am in a hurry
+                const incomingUser: User = Object.assign(new User(), req.body.user);
+                incomingUser.password = await bcrypt.hash(incomingUser.password, 10); // this could be done cleaner but I am in a hurry
+                const user: User = await Context.DAO.createUser(incomingUser);
                 json = {
                     user: user
                 };
@@ -38,10 +39,6 @@ export class CreateControllerApplicantsPost extends Controller {
                 this.log(LogLevels.ERROR, e.message, null, req, e);
                 return this.resolvePromise(null, resolve, reject, this.resolveServiceError(e), null);
             }
-
-            // set response headers, if you do not want cors enabled remove these headers and update the serverless.yml removing cors blocks
-            res.set('Access-Control-Allow-Origin', '*');
-            res.set('Access-Control-Allow-Credentials', true);
 
             return this.resolvePromise(json, resolve, reject, null, null);
         });

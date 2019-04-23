@@ -44,6 +44,17 @@ as it can give you more deployment options.
 ## Data Abstractions
 I opted to encapsulate TypeORM repository operations in a DAO and abstract the implementation to a factory. This allows for a clean
 migration path away from TypeORM and abstracts away persistence details. The DAO API can remain consistent regardless of the driver implementation.
+
+## Articles I Used
+* Network setup
+https://docs.aws.amazon.com/codebuild/latest/userguide/cloudformation-vpc-template.html
+* Error resolution: CloudWatch Logs role ARN must be set in account settings to enable logging
+https://gist.github.com/villasv/4f5b62a772abe2c06525356f80299048
+* RDS setup
+https://forum.serverless.com/t/create-a-resource-in-a-vpc-aws-rds/6361/5
+* Dynimac host and port resoltuion
+https://github.com/arabold/serverless-export-env/issues/8
+
 ## Dependencies
 
 Make sure node is installed.

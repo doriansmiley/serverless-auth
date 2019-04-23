@@ -125,7 +125,6 @@ functions:
         vpc:
           securityGroupIds:
             - !Ref NoIngressSecurityGroup
-            - !Ref DatabaseVpcSecurityGroup
           subnetIds:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
@@ -152,7 +151,6 @@ functions:
         vpc:
           securityGroupIds:
             - !Ref NoIngressSecurityGroup
-            - !Ref DatabaseVpcSecurityGroup
           subnetIds:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
@@ -457,6 +455,7 @@ resources:
                 IpProtocol: tcp
                 FromPort: 3306
                 ToPort: 3306
+                SourceSecurityGroupId : !Ref NoIngressSecurityGroup
             VpcId: !Ref VPC
 
         NatGateway1EIP:

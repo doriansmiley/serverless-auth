@@ -7,7 +7,7 @@ import {string, object, number, validate, ValidationOptions, ValidationResult as
 import * as express from 'express';
 import {Controller} from './Controller';
 import {User} from '../model/entity/User';
-import * as bcrypt from 'bcrypt';
+import {PwdUtils} from '../util/PwdUtils';
 
 export class CreateControllerApplicantsPost extends Controller {
 
@@ -30,7 +30,10 @@ export class CreateControllerApplicantsPost extends Controller {
 
             try {
                 const incomingUser: User = Object.assign(new User(), req.body.user);
-                incomingUser.password = await bcrypt.hash(incomingUser.password, 10); // this could be done cleaner but I am in a hurry
+                const hash: { salt: string, hash: string, iterations: number } = PwdUtils.hashPwd(incomingUser.password);
+                incomingUser.password = hash.hash; // this could be done cleaner but I am in a hurry
+                incomingUser.salt = hash.salt; // this could be done cleaner but I am in a hurry
+                incomingUser.iterations = hash.iterations; // this could be done cleaner but I am in a hurry
                 const user: User = await Context.DAO.createUser(incomingUser);
                 json = {
                     user: user

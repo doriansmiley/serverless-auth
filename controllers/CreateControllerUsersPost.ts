@@ -7,7 +7,7 @@ import * as express from 'express';
 import {Controller} from './Controller';
 import {User} from '../model/entity/User';
 import {Context} from '../core/Context';
-import * as bcrypt from 'bcrypt';
+import {PwdUtils} from '../util/PwdUtils';
 
 export class CreateControllerUsersPost extends Controller {
 
@@ -31,7 +31,7 @@ export class CreateControllerUsersPost extends Controller {
             try {
                 const incomingUser: User = Object.assign(new User(), req.body.user);
                 const user: User = await Context.DAO.readUser(Object.assign(new User(), req.body.user));
-                const match = await bcrypt.compare(incomingUser.password, user.password);
+                const match = PwdUtils.validatePwd(incomingUser.password, user.salt, user.password, user.iterations);
                 if (!match) {
                     throw new ServiceError('Username or password does not match', 400);
                 }

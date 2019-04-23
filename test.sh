@@ -20,6 +20,9 @@ then
 nohup serverless offline start --stage local \
           --host $TEST_API_GATEWAY_HOST \
           --port $TEST_API_GATEWAY_PORT \
+          --DbHost $DB_HOST \
+          --DbUser $DB_USER \
+          --DbPwd $DB_PWD \
           --alert-email $ALERT_EMAIL & echo $!
 # store the process ID
 serverless_pid=$!

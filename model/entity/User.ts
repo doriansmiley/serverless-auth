@@ -19,7 +19,13 @@ export class User {
     })
     username: string;
     @Column({
-        length: 64
+        length: 128
     })
     password: string;
+    @Column({
+        length: 128
+    })
+    salt: string;
+    @Column()
+    iterations: number;
 }

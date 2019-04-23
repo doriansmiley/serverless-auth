@@ -51,7 +51,7 @@ provider:
     environment:
         API_VERSION: ${self:custom.version}
         APP_NAME: ${self:custom.appName}
-        DB_HOST: ${opt:DbHost, "10.0.0.0"}
+        DB_HOST: ${opt:DbHost, "localhost"}
         DB_PORT: ${opt:DbPort, "3306"}
         DB_NAME: test
         DB_USER: ${opt:DbUser}
@@ -451,7 +451,6 @@ resources:
             GroupName: DBSecurityGroup
             GroupDescription: Allow local access
             SecurityGroupIngress:
-              - CidrIp: ${opt:DbSecurityGroupIngress, "10.0.0.0/16"}
                 IpProtocol: tcp
                 FromPort: 3306
                 ToPort: 3306

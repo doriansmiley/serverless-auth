@@ -106,7 +106,7 @@ export abstract class AbstractController extends PromiseResolver implements ICon
                     })
                     .catch((e) => {
                         if (e instanceof ServiceError) {
-                            res.status((e as ServiceError).status).send((e as ServiceError).message);
+                            res.status((e as ServiceError).status).send({error: (e as ServiceError).message});
                         } else {
                             next(e);
                         }

@@ -4,6 +4,7 @@ import {LogLevels} from './AbstractController';
 import {IContext} from '../core/IContext';
 import {object, string, validate, ValidationOptions, ValidationResult as JoiValidationResult} from 'joi';
 import * as express from 'express';
+import * as jwt from 'jsonwebtoken';
 // IMPORTANT: this forces the driver to be included, without it it's dropped during tree shacking with dev dependency plugin
 const mysql = require('mysql');
 import {Controller} from './Controller';
@@ -20,39 +21,30 @@ export class CreateSessionController extends Controller {
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
         // log request received
         this.log(LogLevels.INFO, 'CreateSessionController Request received', null, req);
-        return new Promise<object>(async (resolve, reject) => {
-
+        try {
             // first validate the incoming request
             const error: ServiceError = this.checkValidation(req);
             if (error !== null ) {
-                return this.resolvePromise(null, resolve, reject, error, null);
+                throw error;
             }
-
-            let json: any = null;
-
-            try {
-                const incomingUser: User = Object.assign(new User(), req.body.user);
-                const user: User = await Context.DAO.readUser(Object.assign(new User(), req.body.user));
-                const match = PwdUtils.validatePwd(incomingUser.password, user.salt, user.password, user.iterations);
-                if (!match) {
-                    throw new ServiceError('Username or password does not match', 400);
-                }
-                // TODO: constrcut JWT and return
-                json = {
-                    user: user
-                };
-
-            } catch (e) {
-                this.log(LogLevels.ERROR, e.message, null, req, e);
-                if (e instanceof ServiceError) {
-                    // rethrow error, this allows us to return 4xx or 5xx based on the error
-                    throw e;
-                }
-                return this.resolvePromise(null, resolve, reject, this.resolveServiceError(e), null);
+            const incomingUser: User = Object.assign(new User(), req.body.user);
+            const user: User = await Context.DAO.readUser(Object.assign(new User(), req.body.user));
+            const match = PwdUtils.validatePwd(incomingUser.password, user.salt, user.password, user.iterations);
+            if (!match) {
+                throw new ServiceError('Username or password does not match', 400);
             }
+            return {
+                jwt: jwt.sign({userId:user.id}, process.env.JWT_SECRET)
+            };
 
-            return this.resolvePromise(json, resolve, reject, null, null);
-        });
+        } catch (e) {
+            this.log(LogLevels.ERROR, e.message, null, req, e);
+            if (e instanceof ServiceError) {
+                // rethrow error, this allows us to return 4xx or 5xx based on the error
+                throw e;
+            }
+            throw new ServiceError(e.message, 500);
+        }
     }
 
     // This function should match route route controller's http verb

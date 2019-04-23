@@ -18,33 +18,29 @@ export class CreateUserController extends Controller {
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
         // log request received
         this.log(LogLevels.INFO, 'CreateUserController Request received', null, req);
-        return new Promise<object>(async (resolve, reject) => {
-
+        try {
             // first validate the incoming request
             const error: ServiceError = this.checkValidation(req);
             if (error !== null) {
-                return this.resolvePromise(null, resolve, reject, error, null);
+                throw error;
             }
-
-            let json: object = null;
-
-            try {
-                const incomingUser: User = Object.assign(new User(), req.body.user);
-                const hash: { salt: string, hash: string, iterations: number } = PwdUtils.hashPwd(incomingUser.password);
-                incomingUser.password = hash.hash; // this could be done cleaner but I am in a hurry
-                incomingUser.salt = hash.salt; // this could be done cleaner but I am in a hurry
-                incomingUser.iterations = hash.iterations; // this could be done cleaner but I am in a hurry
-                const user: User = await Context.DAO.createUser(incomingUser);
-                json = {
-                    user: user
-                };
-            } catch (e) {
-                this.log(LogLevels.ERROR, e.message, null, req, e);
-                return this.resolvePromise(null, resolve, reject, this.resolveServiceError(e), null);
+            const incomingUser: User = Object.assign(new User(), req.body.user);
+            const hash: { salt: string, hash: string, iterations: number } = PwdUtils.hashPwd(incomingUser.password);
+            incomingUser.password = hash.hash;
+            incomingUser.salt = hash.salt;
+            incomingUser.iterations = hash.iterations;
+            const user: User = await Context.DAO.createUser(incomingUser);
+            return {
+                user: user
+            };
+        } catch (e) {
+            this.log(LogLevels.ERROR, e.message, null, req, e);
+            if (e instanceof ServiceError) {
+                // rethrow error, this allows us to return 4xx or 5xx based on the error
+                throw e;
             }
-
-            return this.resolvePromise(json, resolve, reject, null, null);
-        });
+            throw new ServiceError(e.message, 500);
+        }
     }
 
     // This function should match route route controller's http verb

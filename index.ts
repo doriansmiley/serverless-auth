@@ -5,8 +5,8 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as AWSXRay from 'aws-xray-sdk';
 import {XSSController} from './controllers/XSSController';
-import {CreateControllerUsersPost} from './controllers/CreateControllerUsersPost';
-import {CreateControllerApplicantsPost} from './controllers/CreateControllerApplicantsPost';
+import {CreateSessionController} from './controllers/CreateSessionController';
+import {CreateUserController} from './controllers/CreateUserController';
 import {DaoFactory} from './dao/DaoFactory';
 import {Context} from './core/Context';
 
@@ -58,9 +58,9 @@ app.use(/(\/v[0-9])?/, new XSSController(xssConfig).register());
 
 // define API routes
 
-app.post('(\/v[0-9])?/users/sessions', cors(), new CreateControllerUsersPost().register());
+app.post('(\/v[0-9])?/users/sessions', cors(), new CreateSessionController().register());
 
-app.post('(\/v[0-9])?/users', cors(), new CreateControllerApplicantsPost().register());
+app.post('(\/v[0-9])?/users', cors(), new CreateUserController().register());
 
 // IMPORTANT: Must be last!
 app.use(AWSXRay.express.closeSegment());

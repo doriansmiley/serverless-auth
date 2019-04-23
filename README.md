@@ -86,6 +86,7 @@ We deploy to AWS using serverless directly. You will need the AWS Credentials se
 ```bash
 serverless deploy -v --force --stage $STAGE \
     --alert-email $ALERT_EMAIL \
+    --DbHost $DB_HOST \
     --DbUser $DB_USER \
     --DbPwd $DB_PWD
 ```

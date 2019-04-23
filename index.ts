@@ -22,13 +22,13 @@ app.get('/', function (req, res) {
     res.status(200).send('Hello World! I am the Auth API ' +  process.env.API_VERSION);
 });
 
-// init dao factory
-const factory = new DaoFactory();
 // initialize database connection
 app.use(async function(req, res, next) {
     if (!Context.DAO) {
-        Context.DAO = factory.getDAO('mysql') as IDao;
+        console.log('Context.DAO' + Context.DAO);
+        Context.DAO = new DaoFactory().getDAO('mysql') as IDao;
         await Context.DAO.connect();
+        console.log('Context.DAO' + Context.DAO);
     }
     next();
 });
@@ -60,8 +60,6 @@ app.post('(\/v[0-9])?/users/sessions', new CreateController_UsersPost().register
 
 app.post('(\/v[0-9])?/users', new CreateController_ApplicantsPost().register());
 
-
-
 // IMPORTANT: Must be last!
 app.use(AWSXRay.express.closeSegment());
 
@@ -86,3 +84,4 @@ const handler = async (event, context, callback) => {
 };
 
 module.exports.handler = handler;
+//app.listen(process.env.TEST_API_GATEWAY_PORT, () => console.log(`Example app listening on port ${process.env.TEST_API_GATEWAY_PORT}!`))

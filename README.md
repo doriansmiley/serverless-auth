@@ -84,10 +84,10 @@ Your service will be accessible on `localhost:3000`.
 We deploy to AWS using serverless directly. You will need the AWS Credentials setup on your machine. Check with DevOps if you need help with this
 
 ```bash
-serverless deploy -v --stage $STAGE \
+serverless deploy -v --force --stage $STAGE \
     --alert-email $ALERT_EMAIL \
     --DbUser $DB_USER \
-    —-DbPwd $DB_PWD
+    --DbPwd $DB_PWD
 ```
 Serverless will deploy the following:
 * API Gateway setup

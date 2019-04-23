@@ -49,8 +49,16 @@ provider:
     region: us-west-2
     profile: serverless
     environment:
-        API_VERSION: '${self:custom.version}'
-        APP_NAME: '${self:custom.appName}'
+        API_VERSION: ${self:custom.version}
+        APP_NAME: ${self:custom.appName}
+        DB_HOST: ${opt:DbHost, "10.0.0.0"}
+        DB_PORT: ${opt:DbPort, "3306"}
+        DB_NAME: test
+        DB_USER: ${opt:DbUser}
+        DB_PWD: ${opt:DbPwd}
+        DB_TYPE: mysql
+        JWT_HEADER: ${opt:JwtHeader, "x-serverless-auth"} # these aren't used to authentication at this time so included defaults to reduce options in deploy command
+        JWT_SECRET: ${opt:JwtSecret, "anything"}
     iamRoleStatements:
         -
             Effect: Allow
@@ -117,6 +125,7 @@ functions:
         vpc:
           securityGroupIds:
             - !Ref NoIngressSecurityGroup
+            - !Ref DatabaseVpcSecurityGroup
           subnetIds:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
@@ -143,6 +152,7 @@ functions:
         vpc:
           securityGroupIds:
             - !Ref NoIngressSecurityGroup
+            - !Ref DatabaseVpcSecurityGroup
           subnetIds:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
@@ -422,9 +432,8 @@ resources:
             DBInstanceClass: db.t2.micro
             Engine: mysql
             EngineVersion: "5.7.21"
-            EngineMode: "serverless"
-            MasterUsername: ${opt:DbUser, "root"} # TODO: remove default user
-            MasterUserPassword: ${opt:DbPwd, "sks2342jjz"} # TODO: remove default PWD
+            MasterUsername: ${opt:DbUser}
+            MasterUserPassword: ${opt:DbPwd}
             DBSubnetGroupName: !Ref DBSubnetGroup
             VPCSecurityGroups:
               - Ref: DatabaseVpcSecurityGroup

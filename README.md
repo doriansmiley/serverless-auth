@@ -29,6 +29,10 @@ Some developers ask why the use of http-serverless which wraps express APIs. Usi
 You can deploy the API as either a docker container or serverless application using API Gateway and Lambda.
 The downside however are somewhat bloated lambda function functions. I prefer this approach though
 as it can give you more deployment options.
+
+## Data Abstractions
+I opted to encapsulate TypeORM repository operation in a DAO and abstract the implementation to a factory. This allows for a clean
+migration path away from TypeORM and abstracts away persistence details. The DAO API can remain consistent regardless of the driver implementation.
 ## Dependencies
 
 Make sure node is installed.

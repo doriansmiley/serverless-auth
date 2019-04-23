@@ -4,12 +4,12 @@ import {DatabaseType} from 'typeorm';
 
 export class DaoFactory {
 
-    public getDAO(code:string):IDao {
+    public getDAO(code: string): IDao {
         switch (code) {
             case 'mysql':
                 return new TypeOrmDao(
                     process.env.DB_HOST,
-                    parseInt(process.env.DB_PORT),
+                    parseInt(process.env.DB_PORT, 10),
                     process.env.DB_NAME,
                     process.env.DB_USER,
                     process.env.DB_PWD,

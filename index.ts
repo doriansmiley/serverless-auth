@@ -4,7 +4,7 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as AWSXRay from 'aws-xray-sdk';
 import {XSSController} from './controllers/XSSController';
-import {CreateController_UsersPost} from './controllers/CreateController_UsersPost'
+import {CreateControllerUsersPost} from './controllers/CreateControllerUsersPost'
 import {CreateControllerApplicantsPost} from './controllers/CreateControllerApplicantsPost'
 import {DaoFactory} from './dao/DaoFactory';
 import {Context} from './core/Context';
@@ -56,7 +56,7 @@ app.use(/(\/v[0-9])?/, new XSSController(xssConfig).register());
 
 //define API routes
 
-app.post('(\/v[0-9])?/users/sessions', new CreateController_UsersPost().register());
+app.post('(\/v[0-9])?/users/sessions', new CreateControllerUsersPost().register());
 
 app.post('(\/v[0-9])?/users', new CreateControllerApplicantsPost().register());
 

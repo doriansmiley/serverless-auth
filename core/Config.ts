@@ -1,7 +1,7 @@
 import {IConfig} from './IConfig';
 import {StringUtils} from '../util/StringUtils';
 
-export class Config implements IConfig{
+export class Config implements IConfig {
 
     protected _serviceMap: Object = null; // hash to look up routes
 

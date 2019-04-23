@@ -21,6 +21,7 @@ nohup serverless offline start --stage local \
           --host $TEST_API_GATEWAY_HOST \
           --port $TEST_API_GATEWAY_PORT \
           --DbHost $DB_HOST \
+          --DbPort $DB_PORT \
           --DbUser $DB_USER \
           --DbPwd $DB_PWD \
           --alert-email $ALERT_EMAIL & echo $!

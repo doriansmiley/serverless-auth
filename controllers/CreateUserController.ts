@@ -9,7 +9,7 @@ import {Controller} from './Controller';
 import {User} from '../model/entity/User';
 import {PwdUtils} from '../util/PwdUtils';
 
-export class CreateControllerApplicantsPost extends Controller {
+export class CreateUserController extends Controller {
 
     constructor() {
         super();
@@ -17,7 +17,7 @@ export class CreateControllerApplicantsPost extends Controller {
 
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
         // log request received
-        this.log(LogLevels.INFO, 'CreateControllerApplicantsPost Request received', null, req);
+        this.log(LogLevels.INFO, 'CreateUserController Request received', null, req);
         return new Promise<object>(async (resolve, reject) => {
 
             // first validate the incoming request

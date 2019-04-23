@@ -1,12 +1,15 @@
 import {ServiceError} from '../error/ServiceError';
 import {SecurityException} from '../error/SecurityException';
 import {LogLevels} from './AbstractController';
-import {IContext} from "../core/IContext";
-import { validate, ValidationOptions, ValidationResult as JoiValidationResult } from 'joi';
+import {IContext} from '../core/IContext';
+import {Context} from '../core/Context';
+import {string, object, number, validate, ValidationOptions, ValidationResult as JoiValidationResult} from 'joi';
 import * as express from 'express';
 import {Controller} from './Controller';
+import {User} from '../model/entity/User';
+import * as bcrypt from 'bcrypt';
 
-export class CreateController_ApplicantsPost extends Controller {
+export class CreateControllerApplicantsPost extends Controller {
 
     constructor() {
         super();
@@ -14,36 +17,26 @@ export class CreateController_ApplicantsPost extends Controller {
 
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
         // log request received
-        this.log(LogLevels.INFO, 'CreateController_ApplicantsPost Request received', null, req);
+        this.log(LogLevels.INFO, 'CreateControllerApplicantsPost Request received', null, req);
         return new Promise<object>(async (resolve, reject) => {
 
             // first validate the incoming request
-            const error: ServiceError = this.checkValidation(req)
-            if(error !== null ){
-                return this.resolvePromise(null, resolve, reject, error, null)
+            const error: ServiceError = this.checkValidation(req);
+            if (error !== null) {
+                return this.resolvePromise(null, resolve, reject, error, null);
             }
 
-            let json: any = null;
+            let json: object = null;
 
             try {
-
-                // create context
-                const context: IContext = this.createContext();
-
-                // TODO: code out your controller logic, be sure to pass context to your business objects.
-                // This makes your code threadsafe when accessing service objects
-                // always access service objects via the context
-
-                // TODO: set JSON to return
+                const user: User = await Context.DAO.createUser(Object.assign(new User(), req.body.user));
+                user.password = await bcrypt.hash(user.password, 10); // this could be done cleaner but I am in a hurry
                 json = {
-                    tmp: "someValue"
+                    user: user
                 };
-
             } catch (e) {
-                const error: ServiceError = this.resolveServiceError(e);
                 this.log(LogLevels.ERROR, e.message, null, req, e);
-
-                return this.resolvePromise(null, resolve, reject, error, null);
+                return this.resolvePromise(null, resolve, reject, this.resolveServiceError(e), null);
             }
 
             // set response headers, if you do not want cors enabled remove these headers and update the serverless.yml removing cors blocks
@@ -60,13 +53,17 @@ export class CreateController_ApplicantsPost extends Controller {
     }
 
     protected getSchema(): object {
-        // TODO: add you schema validation.
         // This is called by AbstractController.validate and is run against req.body
         // you can also override the AbstractController.getOptions which returns the schema options
         // for more information see joi validation and schema options
         return {
-            //id: string().required(),
-            //someValue: string().required()
-        }
+            user: object({
+                firstName: string().required(),
+                lastName: string().required(),
+                email: string().required(),
+                username: string().required(),
+                password: string().required()
+            }).required()
+        };
     }
 }

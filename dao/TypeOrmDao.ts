@@ -8,8 +8,8 @@ import {
     getConnectionManager,
     DefaultNamingStrategy
 } from 'typeorm';
-import { RelationLoader } from "typeorm/query-builder/RelationLoader";
-import { RelationIdLoader } from "typeorm/query-builder/RelationIdLoader";
+import { RelationLoader } from 'typeorm/query-builder/RelationLoader';
+import { RelationIdLoader } from 'typeorm/query-builder/RelationIdLoader';
 import {User} from '../model/entity/User';
 import {LogLevels} from '../controllers/AbstractController';
 import {IDao} from './IDao';
@@ -54,9 +54,9 @@ export class TypeOrmDao implements IDao {
     }
 
     protected injectConnectionOptions(connection: Connection,
-                                      options: ConnectionOptions,): Connection {
+                                      options: ConnectionOptions): Connection {
         // @ts-ignore
-        connection.options = options
+        connection.options = options;
         // @ts-ignore
         connection.manager = connection.createEntityManager();
         // @ts-ignore
@@ -80,7 +80,7 @@ export class TypeOrmDao implements IDao {
     public async connect(): Promise<boolean> {
         try {
             this.log(LogLevels.INFO, 'Context.DAO' + Context.DAO);
-            let connectionOptions: ConnectionOptions = {
+            const connectionOptions: ConnectionOptions = {
                 type: this._type,
                 host: this._host,
                 port: this._port,
@@ -97,13 +97,13 @@ export class TypeOrmDao implements IDao {
             const connectionManager = getConnectionManager();
 
             if (connectionManager.has('default')) {
-                this.log(LogLevels.INFO,'Reusing existion connection...');
+                this.log(LogLevels.INFO, 'Reusing existion connection...');
                 this._connection = this.injectConnectionOptions(
                     connectionManager.get(),
                     connectionOptions,
                 );
             } else {
-                this.log(LogLevels.INFO,'Creating new connection...');
+                this.log(LogLevels.INFO, 'Creating new connection...');
                 this._connection = connectionManager.create(connectionOptions);
                 await this._connection.connect();
             }
@@ -127,13 +127,13 @@ export class TypeOrmDao implements IDao {
     async createUser(user: User): Promise<User> {
         // check if any other user has the same email
         try {
-            let existingUser: User = await this._userRepository.findOne({email: user.email});
+            const existingUser: User = await this._userRepository.findOne({email: user.email});
             if (existingUser) {
                 // DO not log emails or user ID values to logs! This is a security no no
                 this.log(LogLevels.WARN, 'User already exists');
                 throw new ServiceError('User already exists', 400);
             }
-            //save the user
+            // save the user
             await this._userRepository.save(user);
             return user;
         } catch (e) {
@@ -161,7 +161,7 @@ export class TypeOrmDao implements IDao {
                 throw e;
             }
             this.log(LogLevels.ERROR, 'An error occurred while attempting to read the user', e.stack, e);
-            throw new ServiceError(e.message, 500)
+            throw new ServiceError(e.message, 500);
         }
     }
 

@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as AWSXRay from 'aws-xray-sdk';
 import {XSSController} from './controllers/XSSController';
 import {CreateController_UsersPost} from './controllers/CreateController_UsersPost'
-import {CreateController_ApplicantsPost} from './controllers/CreateController_ApplicantsPost'
+import {CreateControllerApplicantsPost} from './controllers/CreateControllerApplicantsPost'
 import {DaoFactory} from './dao/DaoFactory';
 import {Context} from './core/Context';
 
@@ -58,7 +58,7 @@ app.use(/(\/v[0-9])?/, new XSSController(xssConfig).register());
 
 app.post('(\/v[0-9])?/users/sessions', new CreateController_UsersPost().register());
 
-app.post('(\/v[0-9])?/users', new CreateController_ApplicantsPost().register());
+app.post('(\/v[0-9])?/users', new CreateControllerApplicantsPost().register());
 
 // IMPORTANT: Must be last!
 app.use(AWSXRay.express.closeSegment());

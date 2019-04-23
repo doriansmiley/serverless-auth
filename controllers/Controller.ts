@@ -3,9 +3,9 @@ import {Context} from '../core/Context';
 import {ServiceError} from '../error/ServiceError';
 import {UuidUtils} from '../util/UuidUtils';
 import * as express from 'express';
-import {IConfig} from "../core/IConfig";
-import {AbstractController} from "./AbstractController"
-import {LogLevels} from "./AbstractController"
+import {IConfig} from '../core/IConfig';
+import {AbstractController} from './AbstractController';
+import {LogLevels} from './AbstractController';
 
 export class Controller extends AbstractController {
 
@@ -19,15 +19,14 @@ export class Controller extends AbstractController {
         if (vResult.error !== null) {
             const error = new ServiceError(vResult.error.message, 400);
             this.log(LogLevels.ERROR, vResult.error.message, null, req, error);
-            return error
+            return error;
         }
         return null;
     }
 
     protected createContext(): Context {
         // create context
-        let config: IConfig = new Config();
-
+        const config: IConfig = new Config();
         return new Context(config);
     }
 
@@ -39,10 +38,9 @@ export class Controller extends AbstractController {
 
         let errorCode = 500;
 
-        if (e instanceof RangeError) {
-            errorCode = 400;
+        if (e instanceof ServiceError) {
+            errorCode = e.status;
         } else {
-            // TODO: add exception handling and set error code appropriately
             errorCode = 500;
         }
 

@@ -14,9 +14,7 @@ curl --header "Content-Type: application/json" \
     https://umen1vjrng.execute-api.us-west-2.amazonaws.com:443/dev/v1/users
 ```
 The user appears to be added despite having the same username. The username is 27 characters but the limit is 26.
-Now remove any character from the username and repeat the test. Attempts to add the user multiple times now fail.
-This will result in a failure of the `find` method ` to return a matching user.
-Subsequent calls appear to keep adding users with the same useranme despite the verification check. I did not try to implement a unique constraint on the column.
+Now remove any character from the username and repeat the test. Attempts to add the user multiple times now fail. I did not try to implement a unique constraint on the column.
 As far as I can tell the find method is failing silently and not adding the user.
 
 <!-- 

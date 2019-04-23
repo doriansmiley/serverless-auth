@@ -1,5 +1,5 @@
-import {IConfig} from "./IConfig";
-import {IDao} from "../dao/IDao";
+import {IConfig} from './IConfig';
+
 export interface IContext {
-    config: IConfig
+    config: IConfig ;
 }

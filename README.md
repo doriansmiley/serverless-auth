@@ -148,7 +148,8 @@ Serverless can emulate a webserver and allow you to hit the gateway function usi
 
 
 ```bash
-    --host $TEST_API_GATEWAY_HOST \
+serverless offline start --stage local \
+          --host $TEST_API_GATEWAY_HOST \
           --port $TEST_API_GATEWAY_PORT \
           --DbHost $DB_HOST \
           --DbPort $DB_PORT \

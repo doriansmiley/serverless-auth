@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(AWSXRay.express.openSegment('Auth API'));
 
 // IMPORTANT: all routes that do not require JWT authentication must be declared ahead of registering the middleware with app.use
-app.get('/', cors(), function (req, res) {
+app.get('(\/v[0-9])?/', cors(), function (req, res) {
     res.status(200).send('Hello World! I am the Auth API ' +  process.env.API_VERSION);
 });
 

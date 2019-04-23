@@ -51,8 +51,14 @@ provider:
     environment:
         API_VERSION: ${self:custom.version}
         APP_NAME: ${self:custom.appName}
-        DB_HOST: ${opt:DbHost, "localhost"}
-        DB_PORT: ${opt:DbPort, "3306"}
+        DB_HOST:
+          Fn::GetAtt:
+            - Database
+            - Endpoint.Address
+        DB_PORT:
+          Fn::GetAtt:
+            - Database
+            - Endpoint.Port
         DB_NAME: test
         DB_USER: ${opt:DbUser}
         DB_PWD: ${opt:DbPwd}
@@ -214,6 +220,10 @@ resources:
       NoIngressSecurityGroup:
         Description: Security group with no ingress rule
         Value: !Ref NoIngressSecurityGroup
+
+      Database:
+        Description: RDS instance
+        Value: !Ref Database
     Resources:
         ApiGwAccountConfig:
             Type: "AWS::ApiGateway::Account"

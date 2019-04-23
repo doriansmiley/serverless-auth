@@ -2,6 +2,10 @@ service: aws-serverless-auth
 custom:
     version: 1.0.0
     appName: aws-serverless-auth
+    dbEndpoint:
+        Fn::GetAtt: [Database, Endpoint.Address]
+    dbPort:
+        Fn::GetAtt: [Database, Endpoint.Port]
     warmup:
         enabled: true # Whether to warm up functions by default or not
         folderName: '_warmup' # Name of the folder created for the generated warmup
@@ -51,14 +55,8 @@ provider:
     environment:
         API_VERSION: ${self:custom.version}
         APP_NAME: ${self:custom.appName}
-        DB_HOST:
-          Fn::GetAtt:
-            - Database
-            - Endpoint.Address
-        DB_PORT:
-          Fn::GetAtt:
-            - Database
-            - Endpoint.Port
+        DB_HOST: ${opt:DbHost, self:custom.dbEndpoint}
+        DB_PORT: ${opt:DbPort, self:custom.dbPort}
         DB_NAME: test
         DB_USER: ${opt:DbUser}
         DB_PWD: ${opt:DbPwd}
@@ -109,7 +107,7 @@ package:
         - 'Globals.js'
         - 'apiSpec.json'
 functions:
-    UsersPost:
+    CreateSession:
         handler: index.handler
         events:
             - http:
@@ -135,7 +133,7 @@ functions:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
 
-    ApplicantsPost:
+    CreateUser:
         handler: index.handler
         events:
             - http:

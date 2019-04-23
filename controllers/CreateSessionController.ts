@@ -4,6 +4,8 @@ import {LogLevels} from './AbstractController';
 import {IContext} from '../core/IContext';
 import {object, string, validate, ValidationOptions, ValidationResult as JoiValidationResult} from 'joi';
 import * as express from 'express';
+// IMPORTANT: this forces the driver to be included, without it it's dropped during tree shacking with dev dependency plugin
+const mysql = require('mysql');
 import {Controller} from './Controller';
 import {User} from '../model/entity/User';
 import {Context} from '../core/Context';

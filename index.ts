@@ -1,16 +1,18 @@
-import {IDao} from "./dao/IDao";
-var serverless = require('serverless-http');
+import {IDao} from './dao/IDao';
+const serverless = require('serverless-http');
+import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as AWSXRay from 'aws-xray-sdk';
 import {XSSController} from './controllers/XSSController';
-import {CreateControllerUsersPost} from './controllers/CreateControllerUsersPost'
-import {CreateControllerApplicantsPost} from './controllers/CreateControllerApplicantsPost'
+import {CreateControllerUsersPost} from './controllers/CreateControllerUsersPost';
+import {CreateControllerApplicantsPost} from './controllers/CreateControllerApplicantsPost';
 import {DaoFactory} from './dao/DaoFactory';
 import {Context} from './core/Context';
 
 const app = express();
-
+// enable options requests
+app.options('*', cors());
 // for parsing application/json
 app.use(bodyParser.json());
 
@@ -18,7 +20,7 @@ app.use(bodyParser.json());
 app.use(AWSXRay.express.openSegment('Auth API'));
 
 // IMPORTANT: all routes that do not require JWT authentication must be declared ahead of registering the middleware with app.use
-app.get('/', function (req, res) {
+app.get('/', cors(), function (req, res) {
     res.status(200).send('Hello World! I am the Auth API ' +  process.env.API_VERSION);
 });
 
@@ -54,11 +56,11 @@ const xssConfig = {
 
 app.use(/(\/v[0-9])?/, new XSSController(xssConfig).register());
 
-//define API routes
+// define API routes
 
-app.post('(\/v[0-9])?/users/sessions', new CreateControllerUsersPost().register());
+app.post('(\/v[0-9])?/users/sessions', cors(), new CreateControllerUsersPost().register());
 
-app.post('(\/v[0-9])?/users', new CreateControllerApplicantsPost().register());
+app.post('(\/v[0-9])?/users', cors(), new CreateControllerApplicantsPost().register());
 
 // IMPORTANT: Must be last!
 app.use(AWSXRay.express.closeSegment());
@@ -69,10 +71,10 @@ const handler = async (event, context, callback) => {
     // This enables Lambda function to complete
     context.callbackWaitsForEmptyEventLoop = false;
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             /** Immediate response for WarmUP plugin */
             if (event.source === 'serverless-plugin-warmup') {
-                console.log('WarmUP - Lambda is warm!')
+                console.log('WarmUP - Lambda is warm!');
                 return resolve('Lambda is warm!');
             }
             const result = await wrapper(event, context);
@@ -84,4 +86,4 @@ const handler = async (event, context, callback) => {
 };
 
 module.exports.handler = handler;
-//app.listen(process.env.TEST_API_GATEWAY_PORT, () => console.log(`Example app listening on port ${process.env.TEST_API_GATEWAY_PORT}!`))
+// app.listen(process.env.TEST_API_GATEWAY_PORT, () => console.log(`Example app listening on port ${process.env.TEST_API_GATEWAY_PORT}!`))

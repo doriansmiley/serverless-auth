@@ -22,6 +22,19 @@ TODO: add badges
 # <a href="https://circleci.com/gh/MFourMobile/mfour-auto-complete-service">
 # <img src="https://circleci.com/gh/MFourMobile/mfour-auto-complete-service.svg?style=shield&circle-token=6ade52254f840a128823978162dd02efdde393f6" alt="Build Status"></a>
 -->
+## Sample cURL Requests:
+```bash
+# Get session
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"user":{"username":"dsmiley","password":"password"}}' \
+  https://umen1vjrng.execute-api.us-west-2.amazonaws.com:443/dev/v1/users/sessions
+# Register User
+curl --header "Content-Type: application/json" \
+    --request POST \
+    --data '{"user":{"firstName": "Dorian", "lastName": "Smiley", "email": "doriansmiley@somehwere.com", "username": "dsmiley", "password": "password"}}' \
+    https://umen1vjrng.execute-api.us-west-2.amazonaws.com:443/dev/v1/users
+```
 ## Use of http-serverless
 Some developers ask why the use of http-serverless which wraps express APIs. Using http-serverless makes the API more portable.
 You can deploy the API as either a docker container or serverless application using API Gateway and Lambda.
@@ -29,7 +42,7 @@ The downside however are somewhat bloated lambda function functions. I prefer th
 as it can give you more deployment options.
 
 ## Data Abstractions
-I opted to encapsulate TypeORM repository operation in a DAO and abstract the implementation to a factory. This allows for a clean
+I opted to encapsulate TypeORM repository operations in a DAO and abstract the implementation to a factory. This allows for a clean
 migration path away from TypeORM and abstracts away persistence details. The DAO API can remain consistent regardless of the driver implementation.
 ## Dependencies
 

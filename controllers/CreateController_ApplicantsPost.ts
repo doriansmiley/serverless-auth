@@ -14,10 +14,8 @@ export class CreateController_ApplicantsPost extends Controller {
 
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
         // log request received
-        this.log(LogLevels.INFO, 'Request received', null, req);
-
+        this.log(LogLevels.INFO, 'CreateController_ApplicantsPost Request received', null, req);
         return new Promise<object>(async (resolve, reject) => {
-            console.log('CreateController.processRequest: ' + JSON.stringify(req.body));
 
             // first validate the incoming request
             const error: ServiceError = this.checkValidation(req)

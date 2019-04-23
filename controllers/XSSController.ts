@@ -15,7 +15,7 @@ export class XSSController extends AbstractController {
 
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
         // log request recieved
-        this.log(LogLevels.INFO, 'Request recieved', null, req);
+        this.log(LogLevels.INFO, 'XSSController Request recieved', null, req);
 
         return new Promise<any>((resolve, reject) => {
             try {

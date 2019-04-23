@@ -15,9 +15,6 @@ export enum LogLevels {
 
 export abstract class AbstractController extends PromiseResolver implements IController {
     protected async processRequest(req: express.Request, res: express.Response): Promise<any> {
-        // log request recieved
-        this.log(LogLevels.INFO, 'Request recieved', null, req);
-
         return new Promise<object>((resolve, reject) => {
             try {
                 // first validate the incoming request.

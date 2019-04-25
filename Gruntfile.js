@@ -17,12 +17,12 @@ module.exports = function(grunt) {
             },
             files: {
                 src: [
-                    "controllers/**/*.ts",
-                    "core/**/*.ts",
-                    "dao/**/*.ts",
-                    "error/**/*.ts",
-                    "model/**/*.ts",
-                    "util/**/*.ts",
+                    "src/controllers/**/*.ts",
+                    "src/core/**/*.ts",
+                    "src/dao/**/*.ts",
+                    "src/error/**/*.ts",
+                    "src/model/**/*.ts",
+                    "src/util/**/*.ts",
                 ]
             }
         },

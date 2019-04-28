@@ -15,7 +15,7 @@ export class JWTController extends AbstractController {
             let token: string | string[] = null;
 
             if (!headerValue) {
-                throw new ServiceError('No token provided.', 403);;
+                throw new ServiceError('No token provided.', 403);
             }
 
             // split authorization header to extract authentication type

@@ -34,7 +34,7 @@ export class CreateSessionController extends AbstractController {
                 throw new ServiceError('Username or password does not match', 400);
             }
             return {
-                jwt: jwt.sign({userId:user.id}, process.env.JWT_SECRET)
+                jwt: jwt.sign({userId: user.id}, process.env.JWT_SECRET)
             };
 
         } catch (e) {

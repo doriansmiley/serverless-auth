@@ -9,7 +9,7 @@
     "lib": ["ES6", "ES2016", "dom"],
     "target": "es6",
     "declaration": true,
-    "rootDir": "./",
+    "rootDir": "./src/",
     "typeRoots": [
       "node_modules/@types"
     ]
@@ -20,6 +20,6 @@
     "webpack"
   ],
   "include": [
-    "./**/*"
+    "./src/**/*"
   ]
 }

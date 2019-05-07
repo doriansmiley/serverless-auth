@@ -162,7 +162,7 @@ Your service will be accessible on `localhost:3000`.
 
 ## Deployment
 
-We deploy to AWS using serverless directly. You will need the AWS Credentials setup on your machine with the appropriate permissions.
+We deploy to AWS using serverless. You will need the AWS Credentials setup on your machine with the appropriate permissions.
 
 ```bash
 # we unset DB_HOST and DB_PORT because the ENV vars are preffered in environment config
@@ -170,6 +170,20 @@ We deploy to AWS using serverless directly. You will need the AWS Credentials se
 unset DB_HOST
 unset DB_PORT
 serverless deploy -v --force --stage $STAGE \
+    --alert-email $ALERT_EMAIL \
+    --DbUser $DB_USER \
+    --DbPwd $DB_PWD
+```
+## Package
+
+We create the deployment pacakge using serverless. You will need the AWS Credentials setup on your machine with the appropriate permissions.
+
+```bash
+# we unset DB_HOST and DB_PORT because the ENV vars are preffered in environment config
+# we want to use stack ouputs
+unset DB_HOST
+unset DB_PORT
+serverless package -v --force --stage $STAGE \
     --alert-email $ALERT_EMAIL \
     --DbUser $DB_USER \
     --DbPwd $DB_PWD
